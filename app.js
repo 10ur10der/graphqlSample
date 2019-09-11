@@ -2,10 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const graphqlHttp = require('express-graphql');
 const {buildSchema} = require('graphql');
+const mongoose = require('mongoose')
+const Event = require('./models/event');
 
 const app = express();
-
-const events = [];
 
 app.use(bodyParser.json());
 
@@ -14,7 +14,7 @@ app.use('/graphql',graphqlHttp({
 
         type Event{
             _id:ID!
-            title : String!
+            title:String!
             description:String!
             price:Float!
             date:String!
@@ -28,7 +28,7 @@ app.use('/graphql',graphqlHttp({
         }
         
         type RootQuery{
-            events:[Event!]!
+            events:[Event!]
         }
         type RouteMutation{
             createEvent(eventInput:EventInput):Event
@@ -40,22 +40,57 @@ app.use('/graphql',graphqlHttp({
     `),
     rootValue:{
         events:()=>{
-            return events;
+            return Event.find({})
+                .then(ev=>{
+                    console.log(ev);
+                    // return ev.map(e=>{
+                    //     return { ...e._doc};
+                    //  //return events;
+                    // });
+                    return ev;
+             }).catch(err=>{
+                console.log(err);
+             });
+            
         },
-        createEvent:(args)=>{
-            const event ={
-                _id:Math.random.toString(),
+        createEvent:(args)=>{          
+            console.log(args);
+            const event = new Event({              
                 title: args.eventInput.title,
                 description : args.eventInput.description,
                 price: +args.eventInput.price,
-                date:args.eventInput.date
-            }
-            events.push(event);
-            return event;
+                date: args.eventInput.date
+            });
+            return event.save().then(result=>{
+                console.log(result);
+                return result;
+            }).catch(err=>{
+                console.log(err);
+                throw err;
+            });
+            
         }
     },
     graphiql :true
 
 }));
 
-app.listen(3000);
+
+
+const password = process.env.MONGO_PASSWORD;
+const user = process.env.MONGO_USER;
+const db = process.env.MONGO_DB;
+mongoose.connect('mongodb+srv://'+user+':'+password+'@cluster0-lchs0.mongodb.net/'+db+'?retryWrites=true&w=majority',{useNewUrlParser: true, useUnifiedTopology: true}).then(()=>{
+    app.listen(3000);
+}).catch(err=>{
+    console.log(err);
+});
+
+var dbCon = mongoose.connection;
+dbCon.once('open',()=>{
+
+});
+
+
+
+
