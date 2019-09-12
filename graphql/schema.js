@@ -2,6 +2,14 @@
 const {buildSchema} = require('graphql');
  var schema =buildSchema(`
 
+        type Booking{
+            _id:ID!
+            event:Event!
+            user:User!
+            createdAt:String!
+            updatedAt:String!
+        }
+
         type Event{
             _id:ID!
             title:String!
@@ -9,6 +17,7 @@ const {buildSchema} = require('graphql');
             price:Float!
             date:String!
             creator:User!
+            
         }
 
         type User{
@@ -33,11 +42,14 @@ const {buildSchema} = require('graphql');
         type RootQuery{
             events:[Event!]!
             users:[User!]!
-            user:[User!]!
+            bookings:[Booking!]!
+            getuser(_id:String):User
         }
         type RouteMutation{
             createEvent(eventInput:EventInput):Event
             createUser(userInput:UserInput):User
+            bookEvent(eventId:ID):Booking
+            cancelBooking(bookingId:ID!):Event!
         }
         schema{
             query:RootQuery
