@@ -2,8 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const graphqlHttp = require('express-graphql');
 const mongoose = require('mongoose');
-const schema = require('./graphql/schema');
-const resolvers = require('./graphql/resolvers');
+const schema = require('./graphql/schema/schema');
+const resolvers = require('./graphql/resolvers/resolvers');
 const app = express();
 
 app.use(bodyParser.json());
