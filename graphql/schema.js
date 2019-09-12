@@ -32,6 +32,8 @@ const {buildSchema} = require('graphql');
         
         type RootQuery{
             events:[Event!]!
+            users:[User!]!
+            user:[User!]!
         }
         type RouteMutation{
             createEvent(eventInput:EventInput):Event
