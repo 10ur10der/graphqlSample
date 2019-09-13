@@ -27,6 +27,13 @@ const {buildSchema} = require('graphql');
             createdEvents :[Event!]
         }
 
+        type AuthData{
+            userId: ID!
+            token: String!
+            tokenExpiration: Int!
+
+        }
+
         input EventInput{
             title:String!
             description:String!
@@ -41,9 +48,10 @@ const {buildSchema} = require('graphql');
         
         type RootQuery{
             events:[Event!]!
-            users:[User!]!
             bookings:[Booking!]!
+            users:[User!]!
             getuser(_id:String):User
+            login(email:String,password:String!):AuthData!
         }
         type RouteMutation{
             createEvent(eventInput:EventInput):Event
