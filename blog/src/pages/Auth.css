@@ -23,8 +23,15 @@ margin: 5rem auto;
     background: #01d1d1;
     font:inherit;
     border:1px solid #01d1d1;
-    border-radius: 5px;
+    border-radius: 3px;
     padding: 0.5rem 1rem;
     margin:  0 1rem;
+    box-shadow:rgba(0, 0, 0, 26);
+    color: white;
 }
 
+.form-actions button:hover,
+.form-actions button:active{
+    background: #01a7a7;
+    border-color: #01a7a7;
+}
