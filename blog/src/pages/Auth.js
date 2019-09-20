@@ -72,6 +72,7 @@ class AuthPage extends Component{
                     resData.data.login.token,
                     resData.data.login.userId,
                     resData.data.login.tokenExpiration);
+                    
             }
         })
         .catch(err=>{
