@@ -1,6 +1,8 @@
 import React,{Component} from 'react';
 import Modal from '../components/Modal/Modal';
 import Backdrop from '../components/Backdrop/Backdrop';
+import EventList from '../components/Events/EventList/EventList';
+import Spinner from '../components/Spinner/Spinner';
 import AuthContext from '../context/auth-context';
 import './Event.css'
 
@@ -8,7 +10,8 @@ class EventPage extends Component{
 
     state = {
         creating:false,
-        events:[]
+        events:[],
+        isLoading:false
     };
     static contextType = AuthContext;
 
@@ -80,7 +83,21 @@ class EventPage extends Component{
             return res.json();
         })
         .then(resData=>{
-           this.fetchEvents();
+           this.setState(prevState=>{
+                const updatedEvents = [...prevState.events];
+                updatedEvents.push({
+                        _id:resData.data.createEvent._id,
+                        title:resData.data.createEvent.title,
+                        description:resData.data.createEvent.description,
+                        date:resData.data.createEvent.date,
+                        price:resData.data.createEvent.price,
+                        creator:{
+                            _id:this.context.userId,                           
+                        }
+
+                });
+                return {event:updatedEvents};
+           });
         })
         .catch(err=>{
             throw err;
@@ -97,7 +114,7 @@ class EventPage extends Component{
 
 
     fetchEvents(){
-
+        this.setState({isLoading:true})
         const requestBody={
             query:`
                 query{
@@ -132,20 +149,17 @@ class EventPage extends Component{
     })
     .then(resData=>{
        const events = resData.data.events;
-       this.setState({events:events});
+       this.setState({events:events,isLoading:false});
     })
     .catch(err=>{
-        throw err;
+        
+        this.setState({isLoading:false});
     });
 
     }
 
     render(){
-
-        const eventList = this.state.events.map(event=>{
-            return <li key={event._id} className="events__list-item">{event.title}</li>;
-        });
-
+      
         return (
             <React.Fragment>
                 {this.state.creating && <Backdrop/>}              
@@ -178,7 +192,11 @@ class EventPage extends Component{
                     <p>Share your own Events!</p>
                     <button className="btn" onClick={this.startCreateEventHandler}>Create Event</button>
                 </div>)}
-                <ul className="events__list">{eventList}</ul>
+                {
+                    this.state.isLoading ? 
+                    <Spinner/>: 
+                    <EventList events={this.state.events} authUserId={this.context.userId}/>
+                }
             </React.Fragment>
         )
     }
